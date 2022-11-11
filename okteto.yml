@@ -1,13 +1,13 @@
 build:
-  hello-world:
-    image: okteto.dev/go-gp:1.0.0
+  gp001:
+    image: okteto.dev/go-gp:1.0.1
     context: .
 
 deploy:
   - kubectl apply -f k8s.yml
 
 dev:
-  hello-world:
+  gp001:
     image: okteto/golang:1
     command: bash
     sync:
