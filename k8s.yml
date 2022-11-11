@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gp001
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gp001
+  template:
+    metadata:
+      labels:
+        app: gp001
+    spec:
+      containers:
+      - image: okteto.dev/go-gp:1.0.0
+        name: gp001
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gp001
+spec:
+  type: ClusterIP
+  ports:
+  - name: "gp001"
+    port: 8888
+  selector:
+    app: gp001
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gp001
+  annotations:
+    dev.okteto.com/generate-host: gp001
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: gp001
+            port:
+              number: 8888
+        path: /
+        pathType: ImplementationSpecific
