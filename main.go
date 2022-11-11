@@ -15,9 +15,15 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/p", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("服务器的链接来了")
 		testa(w, r)
+	})
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("这是一个私密频道，你不要访问"))
+	})
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong"))
 	})
 	log.Println("程序启动")
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
