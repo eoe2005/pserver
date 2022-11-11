@@ -2,13 +2,10 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha1"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"log"
 	"net"
-	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -28,7 +25,7 @@ func main() {
 	// log.Println("程序启动")
 	// http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	p := os.Getenv("PORT")
-	if p == ""{
+	if p == "" {
 		p = "8888"
 	}
 	l, e := net.Listen("tcp", ":"+p)
@@ -42,8 +39,9 @@ func main() {
 		} else {
 			go handleClientRequest(con)
 		}
-	// }
+	}
 }
+
 // func testa(w http.ResponseWriter, r *http.Request) {
 // 	con, _, err := w.(http.Hijacker).Hijack()
 // 	if err != nil {
