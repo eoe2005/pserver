@@ -7,11 +7,12 @@ import (
 	"log"
 	"net"
 	"net/url"
+	"os"
 	"strings"
 )
 
 func main() {
-	l, e := net.Listen("tcp", ":8888")
+	l, e := net.Listen("tcp", ":"+os.Getenv("PORT"))
 	if e != nil {
 		panic("监听端口失败")
 	}
