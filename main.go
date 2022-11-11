@@ -2,30 +2,57 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha1"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"log"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
 )
 
 func main() {
-	l, e := net.Listen("tcp", ":"+os.Getenv("PORT"))
-	if e != nil {
-		panic("监听端口失败")
-	}
-	for {
-		con, e := l.Accept()
-		if e != nil {
-			fmt.Printf("链接数据失败 %s\n", e.Error())
-		} else {
-			go handleClientRequest(con)
-		}
-	}
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("服务器的链接来了")
+		testa(w, r)
+	})
+	log.Println("程序启动")
+	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	// l, e := net.Listen("tcp", ":"+os.Getenv("PORT"))
+	// if e != nil {
+	// 	panic("监听端口失败")
+	// }
+	// for {
+	// 	con, e := l.Accept()
+	// 	if e != nil {
+	// 		fmt.Printf("链接数据失败 %s\n", e.Error())
+	// 	} else {
+	// 		go handleClientRequest(con)
+	// 	}
+	// }
 }
-
+func testa(w http.ResponseWriter, r *http.Request) {
+	con, _, err := w.(http.Hijacker).Hijack()
+	if err != nil {
+		log.Printf("链接失败 %s\n", err.Error())
+		return
+	} else {
+		log.Println("生成链接成功")
+	}
+	challengeKey := r.Header.Get("Sec-WebSocket-Key")
+	h := sha1.New()
+	h.Write([]byte(challengeKey))
+	h.Write([]byte("258EAFA5-E914-47DA-95CA-C5AB0DC85B11"))
+	okey := base64.StdEncoding.EncodeToString(h.Sum(nil))
+	send := fmt.Sprintf("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: %s\r\nSec-WebSocket-Protocol: chat\r\nSec-WebSocket-Version: 13\r\n\r\n", okey)
+	fmt.Println(send)
+	con.Write([]byte(send))
+	//con.
+	handleClientRequest(con)
+}
 func handleClientRequest(client net.Conn) {
 	if client == nil {
 		return
