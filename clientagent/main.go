@@ -21,9 +21,13 @@ func main() {
 			pserver.Debug("建立链接异常 %s", e.Error())
 			continue
 		}
-		ws := GetWs()
-		pserver.TraceDate(c, ws)
+		pserver.Debug("clientIP %s", c.RemoteAddr().String())
+		go runClient(c)
 	}
+}
+func runClient(c net.Conn) {
+	ws := GetWs()
+	pserver.TraceDate(c, ws)
 }
 func GetWs() *websocket.Conn {
 	u := url.URL{Scheme: "ws", Host: "127.0.0.1:8888", Path: "/sock5"}
