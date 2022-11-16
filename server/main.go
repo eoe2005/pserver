@@ -32,6 +32,7 @@ func main() {
 		}
 		defer ws.Close()
 	})
+
 	r.GET("/sock5", func(c *gin.Context) {
 		pserver.Debug("进入sock5模式")
 		ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
@@ -39,7 +40,7 @@ func main() {
 			pserver.Debug("建立ws失败 %s", err.Error())
 			return
 		}
-		pserver.Sock5(ws)
+		pserver.Sock5Raw(ws)
 		pserver.Debug("sock5结束")
 	})
 	pserver.Debug("服务开始运行")

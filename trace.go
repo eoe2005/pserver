@@ -7,6 +7,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+func TraceRaw(c net.Conn, ws *websocket.Conn) {
+	_, r, _ := ws.NextReader()
+	w, _ := ws.NextWriter(websocket.BinaryMessage)
+	go io.Copy(c, r)
+	io.Copy(w, c)
+}
 func TraceDate(cc net.Conn, wws *websocket.Conn) {
 
 	go func() {
