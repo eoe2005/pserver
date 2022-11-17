@@ -1,6 +1,6 @@
 build:
   gp001:
-    image: okteto.dev/go-gp:1.0.4
+    image: okteto.dev/go-gp:1.0.5
     context: .
 
 deploy:
