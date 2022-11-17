@@ -68,31 +68,87 @@ func main() {
 }
 func helo(con net.Conn) {
 	h1 := make([]byte, 3)
-	con.Read(h1)
-	con.Write([]byte{0x05, 0x00})
+	_, e := con.Read(h1)
+	if e != nil {
+		pserver.Debug("sock init err %s", e.Error())
+		return
+	}
+
+	_, e = con.Write([]byte{0x05, 0x00})
+	if e != nil {
+		pserver.Debug("sock init err %s", e.Error())
+		return
+	}
+
 	h2 := make([]byte, 4)
-	con.Read(h2)
+	_, e = con.Read(h2)
+	if e != nil {
+		pserver.Debug("sock init err %s", e.Error())
+		return
+	}
 
 	addr := ""
-	con.Write([]byte{0x05, 0x00, 0x00, h2[3]})
+	_, e = con.Write([]byte{0x05, 0x00, 0x00, h2[3]})
+	if e != nil {
+		pserver.Debug("sock init err %s", e.Error())
+		return
+	}
+
 	switch h2[3] {
 	case 0x01:
 		v := make([]byte, 4)
-		con.Read(v)
+		_, e = con.Read(v)
+		if e != nil {
+			pserver.Debug("sock init err %s", e.Error())
+			return
+		}
+
 		addr = fmt.Sprintf("%d.%d.%d.%d", v[0], v[1], v[2], v[3])
 		fmt.Printf("链接地址 %s\n", addr)
-		con.Write(v)
+		_, e = con.Write(v)
+		if e != nil {
+			pserver.Debug("sock init err %s", e.Error())
+			return
+		}
+
 	case 0x04:
 		v := make([]byte, 16)
-		con.Read(v)
-		con.Write(v)
+		_, e = con.Read(v)
+		if e != nil {
+			pserver.Debug("sock init err %s", e.Error())
+			return
+		}
+
+		_, e = con.Write(v)
+		if e != nil {
+			pserver.Debug("sock init err %s", e.Error())
+			return
+		}
 	case 0x03:
 		l := make([]byte, 1)
-		con.Read(l)
+		_, e = con.Read(l)
+		if e != nil {
+			pserver.Debug("sock init err %s", e.Error())
+			return
+		}
 		v := make([]byte, l[0])
-		con.Read(v)
-		con.Write(l)
-		con.Write(v)
+		_, e = con.Read(v)
+		if e != nil {
+			pserver.Debug("sock init err %s", e.Error())
+			return
+		}
+
+		_, e = con.Write(l)
+		if e != nil {
+			pserver.Debug("sock init err %s", e.Error())
+			return
+		}
+
+		_, e = con.Write(v)
+		if e != nil {
+			pserver.Debug("sock init err %s", e.Error())
+			return
+		}
 		addr = string(v)
 		fmt.Printf("链接地址 %s\n", addr)
 	}
@@ -100,11 +156,25 @@ func helo(con net.Conn) {
 		con.Close()
 	}
 	p := make([]byte, 2)
-	con.Read(p)
+	_, e = con.Read(p)
+	if e != nil {
+		pserver.Debug("sock init err %s", e.Error())
+		return
+	}
+
 	port := (int(p[0]) << 8) + int(p[1])
 	fmt.Printf("链接端口 %d - %d %d %s\n", port, int(p[0])<<8, p[1], string(p))
-	desc, _ := net.Dial("tcp", fmt.Sprintf("%s:%d", addr, port))
-	con.Write(p)
+	desc, e := net.Dial("tcp", fmt.Sprintf("%s:%d", addr, port))
+	if e != nil {
+		pserver.Debug("sock init err %s", e.Error())
+		return
+	}
+
+	_, e = con.Write(p)
+	if e != nil {
+		pserver.Debug("sock init err %s", e.Error())
+		return
+	}
 	go trance(con, desc)
 }
 
