@@ -37,7 +37,10 @@ func main() {
 	})
 
 	r.GET("/sock5", func(c *gin.Context) {
-		pserver.Debug("进入sock5模式")
+		if !websocket.IsWebSocketUpgrade(c.Request) {
+			c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": -1, "msg": "fail"})
+			return
+		}
 		ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
 			pserver.Debug("建立ws失败 %s", err.Error())

@@ -28,7 +28,7 @@ func main() {
 func runClient(c net.Conn) {
 	ws := GetWs()
 	// pserver.TraceDate(c, ws)
-	pserver.TraceRaw(c, ws)
+	pserver.TraceDate(c, ws)
 }
 func GetWs() *websocket.Conn {
 	u := url.URL{Scheme: "ws", Host: "127.0.0.1:8888", Path: "/sock5"}
