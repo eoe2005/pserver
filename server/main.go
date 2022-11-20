@@ -29,11 +29,17 @@ func main() {
 		})
 	})
 	r.GET("/http", func(c *gin.Context) {
-		ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
-		if err != nil {
+		if !websocket.IsWebSocketUpgrade(c.Request) {
+			c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": -1, "msg": "fail"})
 			return
 		}
-		defer ws.Close()
+		ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			pserver.Debug("建立ws失败 %s", err.Error())
+			return
+		}
+		pserver.Http(ws)
+		pserver.Debug("http END")
 	})
 
 	r.GET("/sock5", func(c *gin.Context) {

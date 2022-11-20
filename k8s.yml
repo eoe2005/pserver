@@ -13,7 +13,7 @@ spec:
         app: gp001
     spec:
       containers:
-      - image: okteto.dev/go-gp:1.0.7
+      - image: okteto.dev/go-gp:1.0.8
         name: gp001
 
 ---
