@@ -23,7 +23,8 @@ func TraceDate(cc net.Conn, wws *websocket.Conn) {
 			}
 			b = b[0:rl]
 			Debug("sock -> ws %d -> %s", len(b), string(b))
-			if wws.WriteMessage(websocket.BinaryMessage, b) != nil {
+			e = wws.WriteMessage(websocket.BinaryMessage, b)
+			if e != nil {
 				Debug("trace write:ws失败 %s", e.Error())
 				return
 			}
